@@ -45,5 +45,5 @@ def test_mv_multiply_with_pga_e01_e02_result_0():
     assert result.indices == ()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main()

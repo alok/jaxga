@@ -20,10 +20,7 @@ class MVProdDense(nn.Module):
 
     @nn.compact
     def __call__(self, x):
-        w = self.param(
-            "w", self.w_init,
-            (len(self.w_ind), x.shape[-1], self.units)
-        )
+        w = self.param("w", self.w_init, (len(self.w_ind), x.shape[-1], self.units))
         x = jnp.expand_dims(x, -1)
         # [M, ...B, I] * [M, I, O] -> [M, ...B, I, O] -> [M, ...B, O]
         result_values_unreduced = self.mv_multiply(x, w)

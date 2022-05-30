@@ -1,5 +1,6 @@
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 import pytest
 import jax.numpy as jnp
@@ -15,7 +16,7 @@ def _mv_ones(num_elements, num_bases):
     return MultiVector(
         values=jnp.ones([num_bases, num_elements], dtype=jnp.float32),
         indices=tuple((i,) for i in range(num_bases)),
-        signature=positive_signature
+        signature=positive_signature,
     )
 
 
@@ -27,5 +28,5 @@ def test_jaxga_mul_mv_mv(num_bases, benchmark):
     benchmark(_jaxga_mul, a, b)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main()

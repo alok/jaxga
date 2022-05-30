@@ -8,8 +8,7 @@ def blade_name(blade_indices):
 
 def mv_repr(indices, values):
     return "Multivector(%s)" % " + ".join(
-        "%s %s" % (val, blade_name(ind))
-        for (ind, val) in zip(indices, values)
+        "%s %s" % (val, blade_name(ind)) for (ind, val) in zip(indices, values)
     )
 
 
@@ -17,7 +16,7 @@ def _normal_swap(x):
     for i in range(len(x) - 1):
         a, b = x[i], x[i + 1]
         if a > b:
-            x[i], x[i+1] = b, a
+            x[i], x[i + 1] = b, a
             return False, x
     return True, x
 
@@ -36,7 +35,7 @@ def _collapse_same(x):
     for i in range(len(x) - 1):
         a, b = x[i], x[i + 1]
         if a == b:
-            return False, x[:i] + x[i+2:], a
+            return False, x[:i] + x[i + 2 :], a
     return True, x, None
 
 

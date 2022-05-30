@@ -20,7 +20,9 @@ def get_mv_reduce_same(a_blade_indices):
         blade_index_set = frozenset(blade_index)
         if blade_index_set in blade_to_index:
             index = blade_to_index[blade_index_set]
-            sign, _ = reduce_bases(blade_index, blade_to_blade_index[blade_index_set], positive_signature)
+            sign, _ = reduce_bases(
+                blade_index, blade_to_blade_index[blade_index_set], positive_signature
+            )
         else:
             index = len(blade_to_index)
             sign = 1
@@ -40,6 +42,7 @@ def get_mv_reduce_same(a_blade_indices):
                 else:
                     result = result.at[i].add(sign * a_values[m])
         return result
+
     _values_mv_reduce_same_jit = jax.jit(_values_mv_reduce_same)
 
     return _values_mv_reduce_same_jit, tuple(indices)

@@ -38,6 +38,7 @@ def get_mv_inverse(a_blade_indices, signature):
             u = mult(a_values, u_minus_c)
 
         return u_minus_c / select_last_scalar(u)
+
     _values_mv_inverse_jit = jax.jit(_values_mv_inverse)
 
     return _values_mv_inverse_jit, add_ind

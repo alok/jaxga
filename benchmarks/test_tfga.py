@@ -1,9 +1,11 @@
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 from tfga import GeometricAlgebra
 import tensorflow as tf
 import pytest
+
 
 def _tfga_mul(ga, a, b):
     return ga.geom_prod(a, b)

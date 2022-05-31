@@ -1,16 +1,16 @@
-from .ops.sandwich import get_mv_sandwich
-from .ops.inverse import get_mv_inverse
-from .ops.dual import get_mv_dual
-from .ops.reduce_same import get_mv_reduce_same
-from .ops.keepnonzero import get_mv_keep_nonzero
-from .ops.multiply import get_mv_multiply
-from .ops.add import get_mv_add
-from .ops.simple_exp import get_mv_simple_exp
-from .ops.select import get_mv_select
-from .jaxga import reverse_indices, mv_repr
-from .signatures import positive_signature
 import jax.numpy as jnp
 
+from .jaxga import mv_repr, reverse_indices
+from .ops.add import get_mv_add
+from .ops.dual import get_mv_dual
+from .ops.inverse import get_mv_inverse
+from .ops.keepnonzero import get_mv_keep_nonzero
+from .ops.multiply import get_mv_multiply
+from .ops.reduce_same import get_mv_reduce_same
+from .ops.sandwich import get_mv_sandwich
+from .ops.select import get_mv_select
+from .ops.simple_exp import get_mv_simple_exp
+from .signatures import positive_signature
 
 class MultiVector:
     def e(*indices, **kwargs):

@@ -23,6 +23,7 @@ def test_mv_multiply_with_e1_e2_result_e_12():
 def test_mv_multiply_with_e12_e12_result_minus_1():
     a = MV.e(1, 2)
     result = a * a
+    # TODO check equality directly
     assert result.values.shape == (1,)
     assert result.values[0] == -1
     assert result.indices == ((),)

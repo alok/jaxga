@@ -12,6 +12,11 @@ from .ops.select import get_mv_select
 from .ops.simple_exp import get_mv_simple_exp
 from .signatures import positive_signature
 
+# TODO register mv as pytree
+
+# TODO context manager to handle quadratic form?
+# TODO preserve even/odd split
+# TODO look into dropping quadratic form (sig) or attaching it somehow with a decorator
 class MultiVector:
     def __init__(
         self,
@@ -179,3 +184,37 @@ class MultiVector:
         mv_dual, out_indices = get_mv_dual(self.indices, dims)
         out_values = mv_dual(self.values)
         return MultiVector(out_values, out_indices, signature=self.signature)
+
+    def unitize(self):
+        # TODO
+        return self / self.weight()
+
+    def weight(self):
+        return sqrt(self.antidot(self.antireverse()))
+
+    def bulk(self):
+        return sqrt(self.dot(self.reverse()))
+
+    def geometric_norm(self):
+        return self.bulk() + self.weight()
+
+    def has_geom_property(self):
+        return self.dot(self.reverse()) == self * self.reverse() and self.antidot(
+            self.antireverse()
+        ) == self.antiprod(self, self.antireverse())
+
+    def adjoint():
+        return self.reverse().involute()
+
+    def left_complement(self):
+        return self.reverse().antiprod(antiscalar(self.signature)) + One().antiprod(
+            self.reverse()
+        )
+
+    # TODO define sin/cos/tan/pow using https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4361175/
+
+
+# The spin representation of the twofold cover of an odd orthogonal group, the
+# odd spin group, and the two half-spin representations of the twofold cover of
+# an even orthogonal group, the even spinor group, are fundamental
+# representations that *cannot* be realized in the space of tensors.

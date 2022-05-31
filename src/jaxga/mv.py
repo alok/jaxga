@@ -13,7 +13,17 @@ from .ops.simple_exp import get_mv_simple_exp
 from .signatures import positive_signature
 
 class MultiVector:
-    def e(*indices, **kwargs):
+    def __init__(
+        self,
+        values: jnp.array,
+        indices: Sequence[int],
+        signature: Signature = positive_signature,
+    ) -> None:
+        self.values = values
+        self.indices = tuple(indices)
+        self.signature = signature
+
+    def e(*indices: Sequence[int], **kwargs: dict[str, Any]):
         signature = kwargs["signature"] if "signature" in kwargs else positive_signature
         batch_shape = (
             ((1,) + tuple(kwargs["batch_shape"])) if "batch_shape" in kwargs else (1,)
@@ -23,11 +33,6 @@ class MultiVector:
             indices=(tuple(indices),),
             signature=signature,
         )
-
-    def __init__(self, values, indices, signature=positive_signature):
-        self.values = values
-        self.indices = tuple(indices)
-        self.signature = signature
 
     def __add__(self, other):
         if not isinstance(other, MultiVector):

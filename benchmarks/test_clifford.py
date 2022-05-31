@@ -11,7 +11,7 @@ def _clifford_mul(a, b):
 def _mv_ones(D, num_elements, num_bases):
     return MVArray(
         [
-            D.MultiVector(value=np.ones(2 ** num_bases, dtype=np.float32))
+            D.MultiVector(value=np.ones(2**num_bases, dtype=np.float32))
             for i in range(num_elements)
         ]
     )

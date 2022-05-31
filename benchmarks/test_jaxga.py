@@ -28,5 +28,10 @@ def test_jaxga_mul_mv_mv(num_bases, benchmark):
     benchmark(_jaxga_mul, a, b)
 
 
+def test_prods():
+    # TODO copy the mul tables from lengyel (and signature), and compare.
+    ...
+
+
 if __name__ == "__main__":
     pytest.main()

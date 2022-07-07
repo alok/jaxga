@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from typing import Any, Callable, Literal, Sequence, Tuple, Union
 
+import jax
 import jax.numpy as jnp
+import jax_dataclasses as jdc
 
 from .jaxga import mv_repr, reverse_indices
 from .ops.add import get_mv_add
@@ -21,6 +23,13 @@ from .signatures import positive_signature
 # TODO context manager to handle quadratic form?
 # TODO preserve even/odd split
 Signature = str
+@jax.jit
+def parity(permutation: jnp.ndarray) -> tuple[jnp.ndarray, int]:
+    """A linear algebra approach to the parity of a permutation."""
+    # TODO sort only once
+    sorted_perm = jnp.sort(permutation)
+    sign = jnp.linalg.det(jax.jacobian(jnp.sort)(permutation.astype(float))).astype(int)
+    return sorted_perm, sign
 # TODO look into dropping quadratic form (sig) or attaching it somehow with a decorator
 class MultiVector:
     def __init__(

@@ -30,7 +30,19 @@ def parity(permutation: jnp.ndarray) -> tuple[jnp.ndarray, int]:
     sorted_perm = jnp.sort(permutation)
     sign = jnp.linalg.det(jax.jacobian(jnp.sort)(permutation.astype(float))).astype(int)
     return sorted_perm, sign
+@jdc.pytree_dataclass
+class Blade:
+    indices: jnp.ndarray[int]
+    value: jnp.floating
+
+
 # TODO look into dropping quadratic form (sig) or attaching it somehow with a decorator
+@jdc.pytree_dataclass
+class MV:
+    values: jnp.ndarray
+    indices: tuple[int]
+    signature: Signature
+
 class MultiVector:
     def __init__(
         self,

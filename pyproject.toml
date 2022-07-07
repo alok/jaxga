@@ -1,6 +1,17 @@
+[tool.poetry]
+name = "jaxga"
+version = "0.1.0"
+description = "Geometric algebra library using JAX."
+authors = ["Robin Ka", "Alok Singh <alokbeniwal@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+einops = "^0.4.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+jupyter-http-over-ws = "^0.0.8"
+
 [build-system]
-requires = [
-    "setuptools>=42",
-    "wheel"
-]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

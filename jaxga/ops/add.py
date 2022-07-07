@@ -1,3 +1,4 @@
+from __future__ import annotations
 import jax
 import jax.numpy as jnp
 from .reduce_same import get_mv_reduce_same

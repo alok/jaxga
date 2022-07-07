@@ -1,3 +1,4 @@
+from __future__ import annotations
 import clifford as cf
 from clifford import MVArray
 import numpy as np

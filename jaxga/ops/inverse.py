@@ -1,3 +1,4 @@
+from __future__ import annotations
 import jax
 from functools import cache
 from .multiply import get_mv_multiply

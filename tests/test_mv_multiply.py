@@ -1,3 +1,4 @@
+from __future__ import annotations
 from jaxga.mv import MultiVector as MV
 from jaxga.signatures import pga_signature
 import pytest

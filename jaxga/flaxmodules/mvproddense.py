@@ -1,3 +1,4 @@
+from __future__ import annotations
 from ..ops.multiply import get_mv_multiply
 from ..signatures import positive_signature
 from typing import Sequence, Callable

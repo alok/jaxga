@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Any, Callable, Literal, Sequence, Tuple, Union
+
 import jax.numpy as jnp
 
 from .jaxga import mv_repr, reverse_indices
@@ -16,13 +20,14 @@ from .signatures import positive_signature
 
 # TODO context manager to handle quadratic form?
 # TODO preserve even/odd split
+Signature = str
 # TODO look into dropping quadratic form (sig) or attaching it somehow with a decorator
 class MultiVector:
     def __init__(
         self,
         values: jnp.array,
         indices: Sequence[int],
-        signature: Signature = positive_signature,
+        signature: Callable[[Union[Tuple[()], int]], int] = positive_signature,
     ) -> None:
         self.values = values
         self.indices = tuple(indices)

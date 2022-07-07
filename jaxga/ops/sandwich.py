@@ -1,3 +1,4 @@
+from __future__ import annotations
 import itertools
 import jax
 import jax.numpy as jnp

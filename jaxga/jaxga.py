@@ -1,3 +1,4 @@
+from __future__ import annotations
 from functools import cache
 from .signatures import positive_signature
 

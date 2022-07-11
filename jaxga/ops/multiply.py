@@ -1,13 +1,19 @@
 from __future__ import annotations
+
 import itertools
+from functools import cache
+from typing import Literal
+
 import jax
 import jax.numpy as jnp
+
 from ..jaxga import reduce_bases
-from functools import cache
 
 
 @cache
-def get_mv_multiply(a_blade_indices, b_blade_indices, signature, prod="gp"):
+def get_mv_multiply(
+    a_blade_indices, b_blade_indices, signature, prod: Literal["gp", "op", "ip"] = "gp"
+):
     out_indices = []
     out_blade_indices = []
     out_signs = []

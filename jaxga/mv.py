@@ -23,6 +23,8 @@ from .signatures import positive_signature
 # TODO context manager to handle quadratic form?
 # TODO preserve even/odd split
 Signature = str
+
+
 @jax.jit
 def parity(permutation: jnp.ndarray) -> tuple[jnp.ndarray, int]:
     """A linear algebra approach to the parity of a permutation."""
@@ -30,6 +32,8 @@ def parity(permutation: jnp.ndarray) -> tuple[jnp.ndarray, int]:
     sorted_perm = jnp.sort(permutation)
     sign = jnp.linalg.det(jax.jacobian(jnp.sort)(permutation.astype(float))).astype(int)
     return sorted_perm, sign
+
+
 @jdc.pytree_dataclass
 class Blade:
     indices: jnp.ndarray[int]
@@ -43,6 +47,146 @@ class MV:
     indices: tuple[int]
     signature: Signature
 
+    @staticmethod
+    def e(*indices: Sequence[int], **kwargs: dict[str, Any]):
+        signature = kwargs["signature"] if "signature" in kwargs else positive_signature
+        # TODO remove batching
+        batch_shape = (
+            ((1,) + tuple(kwargs["batch_shape"])) if "batch_shape" in kwargs else (1,)
+        )
+        return MV(
+            values=jnp.ones(batch_shape, dtype=jnp.float32),
+            indices=(tuple(indices),),
+            signature=signature,
+        )
+
+    def __add__(self, other) -> MV:
+        if not isinstance(other, MV):
+            other = MV.e() * other
+
+        mv_add, out_indices = get_mv_add(self.indices, other.indices)
+        out_values = mv_add(self.values, other.values)
+        return MV(values=out_values, indices=out_indices, signature=self.signature)
+
+    def __radd__(self, other) -> MV:
+        if not isinstance(other, MV):
+            other = MV.e() * other
+
+        mv_add, out_indices = get_mv_add(other.indices, self.indices)
+        out_values = mv_add(other.values, self.values)
+        return MV(values=out_values, indices=out_indices, signature=self.signature)
+
+    def __sub__(self, other) -> MV:
+        if not isinstance(other, MV):
+            other = MV.e() * other
+
+        mv_add, out_indices = get_mv_add(self.indices, other.indices)
+        out_values = mv_add(self.values, -other.values)
+        return MV(values=out_values, indices=out_indices, signature=self.signature)
+
+    def __rsub__(self, other) -> MV:
+        if not isinstance(other, MV):
+            other = MV.e() * other
+
+        mv_add, out_indices = get_mv_add(other.indices, self.indices)
+        out_values = mv_add(other.values, -self.values)
+        return MV(values=out_values, indices=out_indices, signature=self.signature)
+
+    def __mul__(self, other) -> MV:
+        if isinstance(other, MV):
+            mv_multiply, out_indices = get_mv_multiply(
+                self.indices, other.indices, self.signature
+            )
+            out_values = mv_multiply(self.values, other.values)
+            return MV(values=out_values, indices=out_indices, signature=self.signature)
+        return MV(
+            values=self.values * other, indices=self.indices, signature=self.signature
+        )
+
+    def __rmul__(self, other) -> MV:
+        if isinstance(other, MV):
+            mv_multiply, out_indices = get_mv_multiply(
+                other.indices, self.indices, self.signature
+            )
+            out_values = mv_multiply(other.values, self.values)
+            return MV(values=out_values, indices=out_indices)
+        return MV(
+            values=self.values * other, indices=self.indices, signature=self.signature
+        )
+
+    def __xor__(self, other) -> MV:
+        mv_multiply, out_indices = get_mv_multiply(
+            self.indices, other.indices, self.signature, "op"
+        )
+        out_values = mv_multiply(self.values, other.values)
+        return MV(values=out_values, indices=out_indices, signature=self.signature)
+
+    def __or__(self, other) -> MV:
+        mv_multiply, out_indices = get_mv_multiply(
+            self.indices, other.indices, self.signature, "ip"
+        )
+        out_values = mv_multiply(self.values, other.values)
+        return MV(values=out_values, indices=out_indices, signature=self.signature)
+
+    def __invert__(self) -> MV:
+        return MV(
+            values=self.values,
+            indices=reverse_indices(self.indices),
+            signature=self.signature,
+        )
+
+    def __neg__(self) -> MV:
+        return MV(values=-self.values, indices=self.indices, signature=self.signature)
+
+    def sandwich(self, other) -> MV:
+        mv_sandwich, out_indices = get_mv_sandwich(
+            self.indices, other.indices, self.signature
+        )
+        out_values = mv_sandwich(self.values, other.values)
+        return MV(values=out_values, indices=out_indices, signature=self.signature)
+
+    def inverse(self) -> MV:
+        mv_inv, inv_indices = get_mv_inverse(self.indices, self.signature)
+        inv_values = mv_inv(self.values)
+        return MV(values=inv_values, indices=inv_indices, signature=self.signature)
+
+    def __truediv__(self, other) -> MV:
+        if isinstance(other, MV):
+            return self * other.inverse()
+        return self * (1 / other)
+
+    def __rtruediv__(self, other) -> MV:
+        return other * self.inverse()
+
+    def __repr__(self) -> MV:
+        return mv_repr(self.indices, self.values)
+
+    def __getitem__(self, select_indices) -> MV:
+        mv_select, out_indices = get_mv_select(self.indices, select_indices)
+        out_values = mv_select(self.values)
+        return MV(out_values, out_indices, signature=self.signature)
+
+    def simple_exp(self) -> MV:
+        mv_simple_exp, out_indices = get_mv_simple_exp(self.indices, self.signature)
+        out_values = mv_simple_exp(self.values)
+        return MV(out_values, out_indices, signature=self.signature)
+
+    def keep_nonzero(self) -> MV:
+        mv_keep_nonzero, out_indices = get_mv_keep_nonzero(self.indices, self.values)
+        out_values = mv_keep_nonzero(self.values)
+        return MV(out_values, out_indices, signature=self.signature)
+
+    def reduce_same(self) -> MV:
+        mv_reduce_same, out_indices = get_mv_reduce_same(self.indices)
+        out_values = mv_reduce_same(self.values)
+        return MV(out_values, out_indices, signature=self.signature)
+
+    def dual(self, dims) -> MV:
+        mv_dual, out_indices = get_mv_dual(self.indices, dims)
+        out_values = mv_dual(self.values)
+        return MV(out_values, out_indices, signature=self.signature)
+
+
 class MultiVector:
     def __init__(
         self,
@@ -54,6 +198,7 @@ class MultiVector:
         self.indices = tuple(indices)
         self.signature = signature
 
+    @staticmethod
     def e(*indices: Sequence[int], **kwargs: dict[str, Any]):
         signature = kwargs["signature"] if "signature" in kwargs else positive_signature
         batch_shape = (

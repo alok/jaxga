@@ -40,6 +40,12 @@ def _collapse_same(x):
     return True, x, None
 
 
+# TODO reduce by
+# 1. joining
+# 2. compute parity, get new permutation and sign
+# 3. go through permutation, reduce by metric (use segment sum to do parallel all-reduce?)
+# TODO https://pastel.archives-ouvertes.fr/tel-02085820/document page 55, chapter 4
+# TODO truncate product? (say, to trivectors)
 @cache
 def reduce_bases(a, b, metric):
     combined = list(a + b)

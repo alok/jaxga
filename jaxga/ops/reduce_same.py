@@ -6,7 +6,14 @@ from jaxga.signatures import positive_signature
 from ..jaxga import reduce_bases
 from functools import cache
 
+# https://stackoverflow.com/questions/72265516/permutation-sign-for-batched-vectors-python
+@jax.jit
+def compute_parity(p):
+  return jnp.linalg.det(jax.jacobian(jnp.sort)(p.astype(float))).astype(int)
 
+
+
+# TODO this is what needs to be improved
 @cache
 def get_mv_reduce_same(a_blade_indices):
     blade_to_index = {}
@@ -47,3 +54,14 @@ def get_mv_reduce_same(a_blade_indices):
     _values_mv_reduce_same_jit = jax.jit(_values_mv_reduce_same)
 
     return _values_mv_reduce_same_jit, tuple(indices)
+
+# def compute_parity(p):
+#     return jnp.linalg.det(jax.jacobian(jnp.sort)(p.astype(float))).astype(int)
+
+# def compute_parity(p):
+#   return jnp.linalg.det(jax.jacobian(jnp.sort)(p.astype(float))).astype(int)
+
+
+
+# In [13]: p=jax.jit(compute_parity)
+# 51.3 µs ± 57.6 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
